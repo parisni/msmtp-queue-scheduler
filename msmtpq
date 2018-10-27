@@ -60,6 +60,7 @@ err() { dsp '' "$@" '' ; exit 1 ; }
 ##   e.g. ( MSMTP=/path/to/msmtp )
 ##   and uncomment the test for its existence
 MSMTP=msmtp
+DEFER_DELAY=3
 #[ -x "$MSMTP" ] || \
 #  log -e 1 "msmtpq : can't find the msmtp executable [ $MSMTP ]"   # if not found - complain ; quit
 ##
@@ -84,7 +85,7 @@ Q=~/.msmtp.queue
 ##     (doing so would be inadvisable under most conditions, however)
 ##
 ## the queue log file - modify (or comment out) to taste  (but no quotes !!)
-LOG=~/log/msmtp.queue.log
+LOG=~/msmtp.queue.log
 ## ======================================================================================
 
 ## msmtpq can use the following environment variables :
@@ -108,7 +109,7 @@ LOG=~/log/msmtp.queue.log
 ##
 #EMAIL_CONN_NOTEST=y                 # deprecated ; use below var
 #EMAIL_CONN_TEST={x| |p|P|n|s}       # see settings above for EMAIL_CONN_TEST
-EMAIL_CONN_TEST=n
+EMAIL_CONN_TEST=p
 #EMAIL_QUEUE_QUIET=t
 ## ======================================================================================
 
@@ -198,6 +199,7 @@ connect_test() {
     # would ping -qnc2 -w4 be better ?
     # would ping -qnc1 -w10 or -w20 be better ?
     #ping -qnc1 -w4 debian.org >/dev/null 2>&1 || return 1
+    #return 1
     ping -qnc2 -w10 debian.org >/dev/null 2>&1 || return 1
 
   elif [ "$EMAIL_CONN_TEST" = 'P' ] ; then                     # use quicker ping test
@@ -282,19 +284,23 @@ send_queued_mail() {   # <-- mail id
       }
     }
 
-    if $MSMTP $(< "${FQP}.msmtp") < "${FQP}.mail" ; then       # this mail goes out the door
-      log "mail [ $2 ] [ $1 ] from queue ; send was successful ; purged from queue"  # good news to user
-      'rm' -f ${FQP}.*                                         # nuke both queue mail files
-      ALT='t'                        # set queue changed flag
-    else                             # send was unsuccessful
-      RC=$?                          # take msmtp exit code
-      log "mail [ $2 ] [ $1 ] from queue ; send failed ; msmtp rc = $RC" # bad news ...
-    fi
-    return $RC                       # func returns exit code
-  else                               # corresponding MSF file not found
-    log "preparing to send .mail file [ $1 ] [ ${FQP}.mail ] but"\
-        "  corresponding .msmtp file [ ${FQP}.msmtp ] was not found in queue"\
-        '  skipping this mail ; this is worth looking into'    # give user the bad news
+  if [ ! -f "${FQP}.at" ] ; then    # corresponding .at file NOT found
+    echo -n $MSMTP $(< "${FQP}.msmtp")  "< ${FQP}.mail  && rm -f ${FQP}.*"|at now + $DEFER_DELAY minutes && touch ${FQP}.at
+  fi
+
+  #  if $MSMTP $(< "${FQP}.msmtp") < "${FQP}.mail" ; then       # this mail goes out the door
+  #    log "mail [ $2 ] [ $1 ] from queue ; send was successful ; purged from queue"  # good news to user
+  #    'rm' -f ${FQP}.*                                         # nuke both queue mail files
+  #    ALT='t'                        # set queue changed flag
+  #  else                             # send was unsuccessful
+  #    RC=$?                          # take msmtp exit code
+  #    log "mail [ $2 ] [ $1 ] from queue ; send failed ; msmtp rc = $RC" # bad news ...
+  #  fi
+  #  return $RC                       # func returns exit code
+  #else                               # corresponding MSF file not found
+  #  log "preparing to send .mail file [ $1 ] [ ${FQP}.mail ] but"\
+  #      "  corresponding .msmtp file [ ${FQP}.msmtp ] was not found in queue"\
+  #      '  skipping this mail ; this is worth looking into'    # give user the bad news
   fi                                                           # (but allow continuation)
 }
 
@@ -483,14 +489,18 @@ send_mail() {    # <-- all mail args ; mail text via TMP
     }
   }
 
-  if $MSMTP "$@" < "${FQP}.mail" > /dev/null ; then      # send mail using queue .mail fil
-    log "mail for [ $* ] : send was successful"          # log it
-    'rm' -f ${FQP}.*                 # remove all queue mail files .mail & .msmtp file
-    run_queue 'sm'                   # run/flush any other mails in queue
-  else                               # send failed - the mail stays in the queue
-    log "mail for [ $* ] : send was unsuccessful ; msmtp exit code was $?"\
-        "enqueued mail as : [ $ID ] ( $* )"    # (queue .mail file is already there)
+  if [ ! -f "${FQP}.at" ] ; then    # corresponding .at file NOT found
+    echo -n $MSMTP $(< "${FQP}.msmtp")  "< ${FQP}.mail  && rm -f ${FQP}.*"|at now + $DEFER_DELAY minutes && touch ${FQP}.at
   fi
+
+ # if $MSMTP "$@" < "${FQP}.mail" > /dev/null ; then      # send mail using queue .mail fil
+ #   log "mail for [ $* ] : send was successful"          # log it
+ #   'rm' -f ${FQP}.*                 # remove all queue mail files .mail & .msmtp file
+ #   run_queue 'sm'                   # run/flush any other mails in queue
+ # else                               # send failed - the mail stays in the queue
+ #   log "mail for [ $* ] : send was unsuccessful ; msmtp exit code was $?"\
+ #       "enqueued mail as : [ $ID ] ( $* )"    # (queue .mail file is already there)
+ # fi
 }
 
 #
