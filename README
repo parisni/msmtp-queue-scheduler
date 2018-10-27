@@ -1,3 +1,8 @@
+Requirements:
+- msmtp
+- ping
+- at
+
 
 msmtpq is a modification of the scripts comprising part of Martin Lambers'
 msmtpqueue package ; it attempts be useful to msmtp by holding mail sent
