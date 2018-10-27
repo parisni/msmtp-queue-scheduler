@@ -285,7 +285,7 @@ send_queued_mail() {   # <-- mail id
     }
 
   if [ ! -f "${FQP}.at" ] ; then    # corresponding .at file NOT found
-    echo -n $MSMTP $(< "${FQP}.msmtp")  "< ${FQP}.mail  && rm -f ${FQP}.*"|at now + $DEFER_DELAY minutes && touch ${FQP}.at
+    echo -n $MSMTP $(< "${FQP}.msmtp")  "< ${FQP}.mail  && rm -f ${FQP}.* || rm -f ${FQP}.at"|at now + $DEFER_DELAY minutes && touch ${FQP}.at
   fi
 
   #  if $MSMTP $(< "${FQP}.msmtp") < "${FQP}.mail" ; then       # this mail goes out the door
@@ -490,7 +490,7 @@ send_mail() {    # <-- all mail args ; mail text via TMP
   }
 
   if [ ! -f "${FQP}.at" ] ; then    # corresponding .at file NOT found
-    echo -n $MSMTP $(< "${FQP}.msmtp")  "< ${FQP}.mail  && rm -f ${FQP}.*"|at now + $DEFER_DELAY minutes && touch ${FQP}.at
+    echo -n $MSMTP $(< "${FQP}.msmtp")  "< ${FQP}.mail  && rm -f ${FQP}.* || rm -f ${FQP}.at"|at now + $DEFER_DELAY minutes && touch ${FQP}.at
   fi
 
  # if $MSMTP "$@" < "${FQP}.mail" > /dev/null ; then      # send mail using queue .mail fil
