@@ -516,7 +516,7 @@ send_mail() {    # <-- all mail args ; mail text via TMP
 generate_at() {
   if  grep -q "^Scheduler: " ${FQP}.mail  ; then # if a description header have been written
     echo $(pcregrep -o1 "^Scheduler: (.*)$" "${FQP}.mail") # extract the at pattern
-    sed -i "s/^Scheduler/d" "${FQP}.mail" # remove the Description line that won't be used anymore
+    sed -i "/^Scheduler: /d" "${FQP}.mail" # remove the Description line that won't be used anymore
   else
     echo "now + ${DEFER_DELAY} minutes" # set default delay
   fi
