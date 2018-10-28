@@ -30,9 +30,9 @@ Install:
 Introduction:
 The present patch schedules sending email to a default value of 3 minutes in
 the future and the date of the email will be set accordingly. It is yet
-possible to change that default value by adding a value to Content-description
-(key "d" in the sending menu) and put the "at" syntax in it (eg: now, 9 AM
-tomorrow, ...).  The description is used as a trick to easily pass scheduling
+possible to change that default value by adding the "Scheduler: ..." heder
+(key "E" in the sending menu) and put the "at" syntax in it (eg: now, 9 AM
+tomorrow, ...).  The header is used as a trick to easily pass scheduling
 to msmtpq but in the future a more elegant solution should replace it.
 
 How to Cancel an Email:
@@ -49,8 +49,8 @@ Type "d" in the sending menu. Write the delay needed.
 eg: 4pm + 3 days, 1am tomorrow, midnight, 6pm today (more running man at)
 
 What if my scheduling syntax is wrong ?
-Mutt will alert you, and you will be able to edit the description. You will
-also have an error in the logs.
+Mutt will alert you, and you will be able to edit the "Scheduler" header. You
+will also have an error in the logs.
 
 What if you are offline ?
 The mail will be put in the queue but won't be scheduled. Running msmtp-queue
