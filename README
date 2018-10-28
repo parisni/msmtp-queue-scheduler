@@ -1,8 +1,51 @@
+###
+# PATCH BEGIN
+###
+
 Requirements:
 - msmtp
 - ping
-- at
+- at (and daemon active)
+- pcregrep
 
+The present patch schedules sending email to a default value of 3 minutes in
+the future and the date of the email will be set accordingly. It is yet
+possible to change that default value by adding a value to Content-description
+(key "d" in the sending menu) and put the "at" syntax in it (eg: now, 9 AM
+tomorrow, ...).  The description is used as a trick to easily pass scheduling
+to msmtpq but in the future a more elegant solution should replace it.
+
+How to Cancel an Email:
+run atq command, then atrm <pid> (see man at). You can then modify both
+file.mail and file.at, remove the file.sch and run the msmtp-queue -r command
+to schedule againg that email.
+
+How to Verify the mail was sent:
+Look at the logfile: "at" will log the result of msmtp. You can also look at
+atq command within the delay to check the scheduler is active fine.
+
+How to Schedule something else than 3 minutes:
+Type "d" in the sending menu. Write the delay needed.
+eg: 4pm + 3 days, at 1am tomorrow, midnight, 6pm today (more running man at)
+
+What if my scheduleing syntax is wrong ?
+You will have an error in the logs.
+
+What if you are offline ?
+The mail will be put in the queue but won't be scheduled. Running msmtp-queue
+-r when online will schedule the email. 
+
+Good Practices:
+- It might be a good option to cron regularly the msmtp-queue -r command.
+- parse regularly the logs to detect when semething went wrong.
+
+TODO:
+- return an error when at syntax is wrong, to catch the problem right now
+
+
+###
+# PATCH END
+###
 
 msmtpq is a modification of the scripts comprising part of Martin Lambers'
 msmtpqueue package ; it attempts be useful to msmtp by holding mail sent
