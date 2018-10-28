@@ -8,6 +8,26 @@ Requirements:
 - at (and daemon active)
 - pcregrep
 
+Install:
+  copy the msmtpq and msmtp-queue scripts to the directory where they will live
+    be certain that they are executable
+      ( chmod +x msmtp* )
+      ( sudo cp msmtp* /usr/local/bin/ )
+  create the queue dir (0700) if necessary
+    ( mkdir -p /path/to/queue/dir )
+    ( chmod 0700 /path/to/queue/dir )
+  enter or confirm the values of the three config setup vars in msmtpq
+  enter or confirm the values of the three option vars in msmtpq - if desired
+  for mutt users -
+    set sendmail="/path/to/msmtpq"   (or "ANY_ENV_VARS_HERE=t /path/to/msmtpq")
+    unset sendmail_wait  (you might have  error to catch)
+    set use_from=yes
+    set realname="Your Name"
+    set from=you@example.com
+    set envelope_from=yes
+    (and perhaps more on the msmtp man page & docs ...)
+
+Introduction:
 The present patch schedules sending email to a default value of 3 minutes in
 the future and the date of the email will be set accordingly. It is yet
 possible to change that default value by adding a value to Content-description
@@ -26,10 +46,11 @@ atq command within the delay to check the scheduler is active fine.
 
 How to Schedule something else than 3 minutes:
 Type "d" in the sending menu. Write the delay needed.
-eg: 4pm + 3 days, at 1am tomorrow, midnight, 6pm today (more running man at)
+eg: 4pm + 3 days, 1am tomorrow, midnight, 6pm today (more running man at)
 
-What if my scheduleing syntax is wrong ?
-You will have an error in the logs.
+What if my scheduling syntax is wrong ?
+Mutt will alert you, and you will be able to edit the description. You will
+also have an error in the logs.
 
 What if you are offline ?
 The mail will be put in the queue but won't be scheduled. Running msmtp-queue
@@ -37,15 +58,13 @@ The mail will be put in the queue but won't be scheduled. Running msmtp-queue
 
 Good Practices:
 - It might be a good option to cron regularly the msmtp-queue -r command.
-- parse regularly the logs to detect when semething went wrong.
-
-TODO:
-- return an error when at syntax is wrong, to catch the problem right now
+- Parse regularly the logs to detect when semething went wrong.
 
 
 ###
-# PATCH END
+#   **The below information are not up to date anymore**
 ###
+
 
 msmtpq is a modification of the scripts comprising part of Martin Lambers'
 msmtpqueue package ; it attempts be useful to msmtp by holding mail sent

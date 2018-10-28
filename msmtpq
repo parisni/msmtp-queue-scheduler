@@ -298,6 +298,7 @@ schedule_send_mail() {
     else
       RC=$?                          # take msmtp exit code
       log "mail [ $2 ] [ $1 ] from queue ; scheduled failed ; msmtp rc = $RC; look at ${FQP}.at, modify it, and run msmtp-queue -r" # bad news ...
+      err "the at syntax is wrong"
     fi
   #  if $MSMTP $(< "${FQP}.msmtp") < "${FQP}.mail" ; then       # this mail goes out the door
   #    log "mail [ $2 ] [ $1 ] from queue ; send was successful ; purged from queue"  # good news to user
