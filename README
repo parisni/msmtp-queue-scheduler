@@ -33,7 +33,7 @@ Introduction:
 -------------
 The present patch schedules sending email to a default value of 3 minutes in
 the future and the date of the email will be set accordingly. It is yet
-possible to change that default value by adding the "Scheduler: ..." heder
+possible to change that default value by adding the "Scheduler: ..." header
 (key "E" in the sending menu) and put the "at" syntax in it (eg: now, 9 AM
 tomorrow, ...).  The header is used as a trick to easily pass scheduling
 to msmtpq but in the future a more elegant solution should replace it.
@@ -51,7 +51,7 @@ atq command within the delay to check the scheduler is active fine.
 
 How to Schedule something else than 3 minutes:
 ----------------------------------------------
-Type "d" in the sending menu. Write the delay needed.
+Press "E" in the sending menu. Add the header "Scheduler: <my at syntax>".
 eg: 4pm + 3 days, 1am tomorrow, midnight, 6pm today (more running man at)
 
 What if my scheduling syntax is wrong ?
